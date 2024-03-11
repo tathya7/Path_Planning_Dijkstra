@@ -195,3 +195,51 @@ while check:
             check = False
     else:
         print("Starting Position is in the Obstacle space! Re-Enter the Position")
+
+# Declaring possible moves
+moves = [MoveU, MoveL, MoveR, MoveD, MoveDL, MoveDR, MoveUR, MoveUL]
+
+# Initializing the visited dictionary because list of tuple is less efficient than dictionary
+visited = {(x_start, y_start): True}
+# Storing Child Nodes as Keys and Parent Nodes as its value
+child2parent = {}
+# Cost to come of a child node 
+cost2come = {(x_start, y_start): 0}
+reach_flag = False
+# Initializing the open list as a heapqueue
+q = []
+i = 0
+
+# Add a node with its cost to the heap queue
+heapq.heappush(q, (0,x_start, y_start))
+
+while q:
+
+    # Tuple Unpacking parameters
+    cst, x_pos, y_pos = heapq.heappop(q)
+
+    if x_pos == x_goal and y_pos == y_goal:
+        print("Goal Reached! Path Generated")
+        path_gen = generate_path(x_start,y_start,x_pos,y_pos,child2parent)
+        reach_flag = True
+        break
+
+    for move in moves:
+            # print(move)
+            node = move(x_pos, y_pos, cst)
+            if node is not None:
+                new_x, new_y, new_cst = node
+
+                if 0 <= new_x < width and 0 <= new_y < height and map[new_y, new_x, 0] == 0:
+
+                    if (new_x, new_y) not in visited:
+                        total_cst = cost2come[(x_pos,y_pos)] + new_cst
+
+                        heapq.heappush(q, (total_cst, new_x, new_y))
+                        child2parent[(new_x, new_y)] = (x_pos, y_pos)
+                        cost2come[(new_x, new_y)] = total_cst
+                        visited[(new_x, new_y)] = True
+
+                    elif cost2come[(new_x, new_y)] > cost2come[(x_pos,y_pos)] + new_cst:
+                            cost2come[(new_x, new_y)] = cost2come[(x_pos,y_pos)] + new_cst
+                            child2parent[(new_x, new_y)] = (x_pos, y_pos)
