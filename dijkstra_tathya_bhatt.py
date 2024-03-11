@@ -158,3 +158,40 @@ cv2.rectangle(map, (900, 450), (1100, 50), (0, 180, 0), -1)
 # cv2.rectangle(map, (900, 450), (1100, 50), (0, 180, 0), -1)
 cv2.rectangle(map, (895, 125), (1020, 375), (255, 255, 255), -1)
 cv2.rectangle(map, (895, 130), (1015, 370), (0, 0, 0), -1)
+
+############### Taking User Inputs for Start and Goal Nodes #############
+
+check = True
+
+while check:
+    x_start = int(input("Enter the initial X position (5 to 1194): "))
+    y_start = int(input("Enter the initial Y Position (5 to 494): "))
+    print("Your Start Node Is: ", x_start, y_start)
+    # Converting the coordinates to the instructed coordinate system
+    y_start = height-y_start-1
+    # Checks if the given node is in the free space
+    if map[y_start, x_start,0] == 0:
+        cv2.circle(map,(x_start, y_start), 2, (0, 180, 0), -1)
+        check = False
+    # If the starting node is in obstacle space
+    else:
+        print("Starting Position is in the Obstacle space! Re-Enter the Position")
+
+check = True
+
+while check:
+    x_goal = int(input("Enter the Destination X Position (5 to 1195):"))
+    y_goal = int(input("Enter the Destination Y Position (5 to 495):"))
+
+    print("Your Goal Node Is: ", x_goal, y_goal)
+    # Converting the coordinates to the instructed coordinate system
+    y_goal = height-y_goal-1 
+    # Checks if the given node is in the free space
+    if map[y_goal, x_goal,0] == 0:
+        # Checks if the start node and goal node are same
+        if (x_start, y_start) == (x_goal, y_goal):
+            print("Error! Start and Goal Position Cannot be Same")
+        else:
+            check = False
+    else:
+        print("Starting Position is in the Obstacle space! Re-Enter the Position")
