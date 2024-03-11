@@ -263,3 +263,26 @@ for (x,y) in visited.keys():
         cv2.imshow("Path Video", map)
         cv2.waitKey(1) 
         i = 0
+
+########### Drawing an actual path #############
+cv2.circle(map, (x_start,y_start), 6, (92,11,227),-1)
+
+cv2.circle(map, (x_goal,y_goal), 6 , (0, 165, 255),-1)
+
+for i in range(len(path_gen) - 1):
+    point = path_gen[i]
+    next_point = path_gen[i+1]
+    cv2.imshow("Path Video", map)
+    cv2.waitKey(1) 
+    cv2.line(map, point, next_point, (0, 165, 255), thickness=2)
+    path_vid.write(map)
+
+last_frame = map
+
+
+for _ in range(200): 
+    path_vid.write(last_frame)
+
+path_vid.release()
+cv2.waitKey(0)
+cv2.destroyAllWindows()
