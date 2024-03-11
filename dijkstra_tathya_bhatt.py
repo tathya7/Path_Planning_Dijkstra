@@ -1,6 +1,9 @@
 import numpy as np
 import cv2
 import heapq
+import time
+
+start = time.time()
 
 ########## Defining the map width and height #############
 
@@ -180,8 +183,8 @@ while check:
 check = True
 
 while check:
-    x_goal = int(input("Enter the Destination X Position (5 to 1195):"))
-    y_goal = int(input("Enter the Destination Y Position (5 to 495):"))
+    x_goal = int(input("Enter the Destination X Position (5 to 1194):"))
+    y_goal = int(input("Enter the Destination Y Position (5 to 494):"))
 
     print("Your Goal Node Is: ", x_goal, y_goal)
     # Converting the coordinates to the instructed coordinate system
@@ -218,43 +221,60 @@ while q:
     # Tuple Unpacking parameters
     cst, x_pos, y_pos = heapq.heappop(q)
 
+    # If the goal is found, generate the path and change the flag to True and end the algorithm
     if x_pos == x_goal and y_pos == y_goal:
         print("Goal Reached! Path Generated")
         path_gen = generate_path(x_start,y_start,x_pos,y_pos,child2parent)
         reach_flag = True
         break
-
+    
+    # If not goal, then perform the required moves
     for move in moves:
             # print(move)
             node = move(x_pos, y_pos, cst)
             if node is not None:
                 new_x, new_y, new_cst = node
 
+                # If X Node and Y Node is in the bounding box and inside the free-space
                 if 0 <= new_x < width and 0 <= new_y < height and map[new_y, new_x, 0] == 0:
-
+                    
+                    # If the new node is not in visited dictionary
                     if (new_x, new_y) not in visited:
+                        # Calculate total cost to come by adding the parent cost to the cost of action
                         total_cst = cost2come[(x_pos,y_pos)] + new_cst
-
+                        # Add the generated node to the Priority Queue
                         heapq.heappush(q, (total_cst, new_x, new_y))
+                        #Store the Child and Parents
                         child2parent[(new_x, new_y)] = (x_pos, y_pos)
+                        # Add the cost to come for that respective child
                         cost2come[(new_x, new_y)] = total_cst
+                        # Add the explored node to the visited dictionary
                         visited[(new_x, new_y)] = True
 
+                    # If the node is already visited, then update the cost to come
                     elif cost2come[(new_x, new_y)] > cost2come[(x_pos,y_pos)] + new_cst:
                             cost2come[(new_x, new_y)] = cost2come[(x_pos,y_pos)] + new_cst
                             child2parent[(new_x, new_y)] = (x_pos, y_pos)
 
+# If the goal is not reachable
 if reach_flag == False:
      print("Goal out of bounds")
 
+end = time.time()
 
-path_vid = cv2.VideoWriter('path1.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 50, (width, height))
+################# Visualization ######################
+# Creating a video object
+path_vid = cv2.VideoWriter('path_final.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 50, (width, height))
 
+# Displaying the start and goal position on the map
 cv2.circle(map, (x_start,y_start), 6, (92,11,227),-1)
 cv2.circle(map, (x_goal,y_goal), 6, (0, 165, 255),-1)
 
+
 num_frames = 250
 i = 0
+
+# This code writes the video in every 250 frames
 for (x,y) in visited.keys():
     i+=1
     map[y,x] = (225, 105, 65)
@@ -266,9 +286,9 @@ for (x,y) in visited.keys():
 
 ########### Drawing an actual path #############
 cv2.circle(map, (x_start,y_start), 6, (92,11,227),-1)
-
 cv2.circle(map, (x_goal,y_goal), 6 , (0, 165, 255),-1)
 
+# Iterating through the optimal path and generating a line based path representation
 for i in range(len(path_gen) - 1):
     point = path_gen[i]
     next_point = path_gen[i+1]
@@ -279,10 +299,13 @@ for i in range(len(path_gen) - 1):
 
 last_frame = map
 
-
+# Letting the frame stay as it is for few seconds to see the video more clearly
 for _ in range(200): 
     path_vid.write(last_frame)
 
 path_vid.release()
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
+# Printing the runtime of the algorithm
+print("Video Generated, Runtime is: ", (end-start))
