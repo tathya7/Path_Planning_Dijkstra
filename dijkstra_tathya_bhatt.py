@@ -243,3 +243,23 @@ while q:
                     elif cost2come[(new_x, new_y)] > cost2come[(x_pos,y_pos)] + new_cst:
                             cost2come[(new_x, new_y)] = cost2come[(x_pos,y_pos)] + new_cst
                             child2parent[(new_x, new_y)] = (x_pos, y_pos)
+
+if reach_flag == False:
+     print("Goal out of bounds")
+
+
+path_vid = cv2.VideoWriter('path1.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 50, (width, height))
+
+cv2.circle(map, (x_start,y_start), 6, (92,11,227),-1)
+cv2.circle(map, (x_goal,y_goal), 6, (0, 165, 255),-1)
+
+num_frames = 250
+i = 0
+for (x,y) in visited.keys():
+    i+=1
+    map[y,x] = (225, 105, 65)
+    if i == num_frames:
+        path_vid.write(map)
+        cv2.imshow("Path Video", map)
+        cv2.waitKey(1) 
+        i = 0
