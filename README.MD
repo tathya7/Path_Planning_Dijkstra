@@ -1,5 +1,5 @@
 # Path Planning using Dijkstra Algorithm
-### Author - Tathya Bhatt (120340246)
+### Author - Tathya Bhatt
 This project implements Dijkstra Algorithm using Python and OpenCV to find the optimal path from a start position to a goal position on a obstacle map and generates a nice smooth animation of the explored nodes and the optimal path using backtracking.
 
 ![](dijkstra.gif)
